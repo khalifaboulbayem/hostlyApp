@@ -1,4 +1,4 @@
-package com.hostly.hostlyapp.models;
+package com.hostly.hostlyapp.enums;
 
 public enum AccommodationType {
     ROOM,

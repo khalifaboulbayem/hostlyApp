@@ -1,5 +1,6 @@
 package com.hostly.hostlyapp.repositories;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,4 +10,5 @@ import com.hostly.hostlyapp.models.Reservation;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, UUID> {
+    Optional<Reservation> findByConfirmationCode(String confirmationCode);
 }

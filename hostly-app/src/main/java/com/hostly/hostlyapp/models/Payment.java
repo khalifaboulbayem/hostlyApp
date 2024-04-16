@@ -4,8 +4,13 @@ import lombok.*;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
+
+import com.hostly.hostlyapp.enums.PaymentMethod;
+import com.hostly.hostlyapp.enums.PaymentStatus;
 
 @Data
 @AllArgsConstructor
@@ -17,15 +22,17 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID id;
 
-    @NotNull(message = "Reservation is required")
-    @OneToOne
-    private Reservation reservation;
-
     @NotNull(message = "Amount is required")
     private double amount;
 
     @NotNull(message = "Payment date is required")
-    private Date paymentDate;
+    private LocalDate paymentDate;
 
-    // getters and setters
+    private PaymentMethod paymentMethod;
+
+    private PaymentStatus status;
+
+    @OneToOne
+    private Reservation reservation;
+
 }

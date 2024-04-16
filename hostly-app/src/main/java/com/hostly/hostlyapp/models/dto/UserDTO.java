@@ -2,6 +2,10 @@ package com.hostly.hostlyapp.models.dto;
 
 import lombok.*;
 
+import java.util.UUID;
+
+import com.hostly.hostlyapp.enums.Role;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -11,7 +15,7 @@ import jakarta.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDTO {
-    private int id;
+    private UUID id;
 
     @NotBlank(message = "Name is required")
     private String name;
@@ -21,7 +25,6 @@ public class UserDTO {
     @Size(max = 60, message = "Size must be less than or equal to 60 caracters")
     private String email;
 
-    @NotBlank(message = "Password is required")
-    private String password;
+    private Role role;
 
 }

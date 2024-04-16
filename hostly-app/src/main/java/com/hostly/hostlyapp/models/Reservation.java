@@ -4,7 +4,8 @@ import lombok.*;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import java.util.Date;
+
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -17,19 +18,25 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID id;
 
-    @NotNull(message = "Accommodation is required")
+    @NotNull(message = "Start date is required")
+    private LocalDate startDate;
+
+    @NotNull(message = "End date is required")
+    private LocalDate endDate;
+
+    @Column(name = "confirmation_Code")
+    private String confirmationCode;
+
     @ManyToOne
+    @JoinColumn(name = "accommodation_id")
     private Accommodation accommodation;
 
     @NotNull(message = "User is required")
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @NotNull(message = "Start date is required")
-    private Date startDate;
-
-    @NotNull(message = "End date is required")
-    private Date endDate;
-
+    @OneToOne
+    private Payment payment;
     // getters and setters
 }

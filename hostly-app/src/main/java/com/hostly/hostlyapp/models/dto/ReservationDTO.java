@@ -3,26 +3,28 @@ package com.hostly.hostlyapp.models.dto;
 import lombok.*;
 
 import jakarta.validation.constraints.NotNull;
-import java.util.Date;
+
+import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReservationDTO {
-    private int id;
+    private UUID id;
 
     @NotNull(message = "Accommodation is required")
-    private AccommodationDTO accommodation;
+    private UUID accommodationId;
 
-    @NotNull(message = "User is required")
-    private UserDTO user;
+    @NotNull(message = "Accommodation is required")
+    private UUID userId;
 
     @NotNull(message = "Start date is required")
-    private Date startDate;
+    private LocalDate startDate;
 
     @NotNull(message = "End date is required")
-    private Date endDate;
+    private LocalDate endDate;
 
     // getters and setters
 }

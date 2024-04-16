@@ -14,6 +14,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.hostly.hostlyapp.enums.Role;
+
 @Entity
 @Builder
 @Data
@@ -40,6 +42,9 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "owner")
     private List<Accommodation> accommodations;
+
+    @OneToMany(mappedBy = "owner")
+    private List<Reservation> reservations;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
