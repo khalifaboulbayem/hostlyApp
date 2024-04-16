@@ -2,6 +2,8 @@ package com.hostly.hostlyapp.models;
 
 import lombok.*;
 
+import java.util.UUID;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -13,7 +15,7 @@ import jakarta.validation.constraints.NotNull;
 public class Accommodation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private UUID id;
 
     @NotNull(message = "Accommodation type is required")
     private AccommodationType type;
