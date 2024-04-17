@@ -4,15 +4,16 @@ import java.util.*;
 
 import com.hostly.hostlyapp.models.Reservation;
 import com.hostly.hostlyapp.models.dto.ReservationDTO;
+import com.hostly.hostlyapp.models.dto.response.ReservationResponse;
 
 public interface ReservationService {
-    Collection<ReservationDTO> getAll();
+    Collection<ReservationResponse> getAll();
 
-    ReservationDTO getById(UUID id);
+    ReservationResponse getById(UUID id);
 
     /// ReservationDTO update(UUID id, ReservationDTO entityDto);
 
-    ReservationDTO create(ReservationDTO entityDto);
+    ReservationResponse create(ReservationDTO entityDto);
 
     void delete(UUID id);
 

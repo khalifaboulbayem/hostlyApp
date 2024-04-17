@@ -17,7 +17,7 @@ import jakarta.validation.constraints.NotNull;
 @Builder
 public class Accommodation {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @NotNull(message = "Accommodation type is required")
@@ -39,5 +39,9 @@ public class Accommodation {
 
     @OneToMany(mappedBy = "accommodation")
     private List<Reservation> reservations;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 
 }

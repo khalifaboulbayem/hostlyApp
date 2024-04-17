@@ -3,16 +3,17 @@ package com.hostly.hostlyapp.services;
 import java.util.*;
 
 import com.hostly.hostlyapp.models.dto.AccommodationDTO;
+import com.hostly.hostlyapp.models.dto.response.AccommodationResponse;
 
 public interface AccommodationService {
 
-    Collection<AccommodationDTO> getAll();
+    Collection<AccommodationResponse> getAll();
 
-    AccommodationDTO getById(UUID id);
+    AccommodationResponse getById(UUID id);
 
-    AccommodationDTO update(UUID id, AccommodationDTO entityDto);
+    AccommodationResponse update(UUID id, AccommodationDTO entityDto);
 
-    AccommodationDTO create(AccommodationDTO entityDto);
+    AccommodationResponse create(AccommodationDTO entityDto);
 
     void delete(UUID id);
 

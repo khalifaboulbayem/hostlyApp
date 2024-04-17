@@ -1,4 +1,4 @@
-package com.hostly.hostlyapp.models.dto;
+package com.hostly.hostlyapp.models.dto.response;
 
 import lombok.*;
 
@@ -7,20 +7,16 @@ import java.util.*;
 import com.hostly.hostlyapp.enums.AccommodationStatus;
 import com.hostly.hostlyapp.enums.AccommodationType;
 
-import jakarta.validation.constraints.NotNull;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccommodationDTO {
+public class AccommodationResponse {
 
     private UUID id;
 
-    @NotNull(message = "Accommodation type is required")
     private AccommodationType type;
 
-    @NotNull(message = "Number of rooms is required")
     private int rooms;
 
     private Double price;
@@ -28,8 +24,6 @@ public class AccommodationDTO {
     private String description;
 
     private AccommodationStatus status;
-
-    private UUID userId;
 
     private List<String> fotos;
     // getters and setters

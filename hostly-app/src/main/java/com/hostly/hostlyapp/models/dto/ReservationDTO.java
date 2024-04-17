@@ -26,5 +26,7 @@ public class ReservationDTO {
     @NotNull(message = "End date is required")
     private LocalDate endDate;
 
+    private String confirmationCode;
+
     // getters and setters
 }

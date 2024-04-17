@@ -15,7 +15,7 @@ import java.util.UUID;
 @Builder
 public class Reservation {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @NotNull(message = "Start date is required")
@@ -31,10 +31,10 @@ public class Reservation {
     @JoinColumn(name = "accommodation_id")
     private Accommodation accommodation;
 
-    @NotNull(message = "User is required")
+    @NotNull(message = "UserEntity is required")
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserEntity user;
 
     @OneToOne
     private Payment payment;
