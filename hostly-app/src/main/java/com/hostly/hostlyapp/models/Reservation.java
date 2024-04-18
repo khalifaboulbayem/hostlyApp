@@ -8,6 +8,8 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.hostly.hostlyapp.enums.ReservationStatus;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -26,6 +28,9 @@ public class Reservation {
 
     @Column(name = "confirmation_Code")
     private String confirmationCode;
+
+    @NotNull(message = "Reservation status is required")
+    private ReservationStatus status;
 
     @ManyToOne
     @JoinColumn(name = "accommodation_id")

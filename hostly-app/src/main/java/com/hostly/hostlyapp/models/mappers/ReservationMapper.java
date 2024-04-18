@@ -15,6 +15,7 @@ public interface ReservationMapper {
     ReservationDTO reservationToReservationDTO(Reservation reservation);
 
     ReservationResponse reservationToReservationResponse(Reservation reservation);
+    ReservationResponse reservationDTOtoReservationResponse(ReservationDTO reservation);
 
     ReservationDTO reservationResponseToReservationDTO(ReservationResponse res);
 }

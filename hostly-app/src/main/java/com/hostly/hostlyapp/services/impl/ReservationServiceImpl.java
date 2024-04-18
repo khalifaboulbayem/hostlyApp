@@ -8,8 +8,11 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hostly.hostlyapp.enums.AccommodationStatus;
+import com.hostly.hostlyapp.enums.PaymentStatus;
+import com.hostly.hostlyapp.enums.ReservationStatus;
 import com.hostly.hostlyapp.handlers.exceptions.BadRequestException;
 import com.hostly.hostlyapp.handlers.exceptions.FieldAlreadyExistException;
 import com.hostly.hostlyapp.handlers.exceptions.FieldInvalidException;
@@ -26,6 +29,7 @@ import com.hostly.hostlyapp.models.mappers.AccommodationMapper;
 import com.hostly.hostlyapp.models.mappers.PaymentMapper;
 import com.hostly.hostlyapp.models.mappers.ReservationMapper;
 import com.hostly.hostlyapp.models.mappers.UserEntityMapper;
+import com.hostly.hostlyapp.repositories.PaymentRepository;
 import com.hostly.hostlyapp.repositories.ReservationRepository;
 import com.hostly.hostlyapp.services.AccommodationService;
 import com.hostly.hostlyapp.services.PaymentService;
@@ -37,6 +41,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Autowired
     private ReservationRepository repository;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     @Autowired
     private UserEntityService userService;
@@ -61,8 +68,9 @@ public class ReservationServiceImpl implements ReservationService {
      * 2- recuperar el usuario
      * 3- ver
      */
+    @Transactional
     @Override
-    public ReservationResponse create(ReservationDTO request) {
+    public ReservationDTO create(ReservationDTO request) {
 
         // Verificar los datos
         LocalDate startDate = request.getStartDate();
@@ -73,94 +81,77 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // Obetener la habitacion de la base de datos
-        AccommodationDTO accoDtoExisting = accommodationMapper
-                .accommodationResponseToAccommodationDTO(accommodationService.getById(request.getAccommodationId()));
+        AccommodationDTO accoDtoExisting = accommodationService.getById(request.getAccommodationId());
 
-        // -verficar sin esta disponible.
+        // Verificar si está disponible.
         if (!accoDtoExisting.getStatus().equals(AccommodationStatus.AVAILABLE)) {
             throw new BadRequestException("Accommodation is not available for reservation.");
         }
 
-        // Si esta disponible si procede a guaradarla mapeando reservationDTO a
-        // reservation entity.
-        Reservation reservation = mapper.reservationDTOtoReservation(request);
+        // Cambiar el estado de la habitación a reservado
+        accoDtoExisting.setStatus(AccommodationStatus.BOOKED);
+        accoDtoExisting = accommodationService.update(request.getAccommodationId(),
+                accoDtoExisting);
 
-        // obtener el usuario
+        // Obtener el usuario
         UserEntity userEntity = userMapper.userResponsetoUserEntity(userService.getById(request.getUserId()));
 
-        // Cambiar el estado de la habitacion
-        accoDtoExisting.setStatus(AccommodationStatus.BOOKED);
-
-        // Guardar la modifcacion de la habitacion en base de datos
-        AccommodationDTO updatedAccommodationDTO = accommodationMapper
-                .accommodationResponseToAccommodationDTO(accommodationService.update(request.getAccommodationId(),
-                        accoDtoExisting));
-
-        // mapear la habitacion a una entidad.
-        Accommodation accoEntity = accommodationMapper.accommodationDTOtoAccommodation(updatedAccommodationDTO);
-
-        // establecer dicha habitacion a la resetva
-        reservation.setAccommodation(accoEntity);
+        // Crear la reserva y establecer la habitación y el usuario
+        Reservation reservation = mapper.reservationDTOtoReservation(request);
+        reservation.setAccommodation(accommodationMapper.accommodationDTOtoAccommodation(accoDtoExisting));
         reservation.setUser(userEntity);
-
-        // Generar y establecer el código de confirmación
-        String confirmationCode = generateConfirmationCode();
-
-        reservation.setConfirmationCode(confirmationCode);
+        reservation.setStatus(ReservationStatus.IN_PROGRESS);
 
         // Crear el pago
-        PaymentDTO paymentDto = getToPay(reservation.getStartDate(), reservation.getEndDate(), accoEntity.getPrice());
-        Payment payment = paymentMapper.paymentDTOtoPayment(paymentDto);
+        // PaymentDTO paymentDto = getToPay(reservation.getStartDate(),
+        // reservation.getEndDate(), accoDtoExisting.getPrice());
 
-        reservation.setPayment(payment);
+        // paymentDto.setStatus(PaymentStatus.IN_PROGRESS);
+        // Payment payment = paymentMapper.paymentDTOtoPayment(paymentDto);
+        // Guardar el pago y la reserva
+        // Payment savedPayment = paymentRepository.save(payment);
+        // reservation.setPayment(savedPayment);
+
+        // Guardar la reserva
         Reservation savedReservation = repository.save(reservation);
-        return mapper.reservationToReservationResponse(savedReservation);
+        return mapper.reservationToReservationDTO(savedReservation);
     }
 
+    // Método para calcular el monto a pagar
     private PaymentDTO getToPay(LocalDate startDate, LocalDate endDate, double pricePerNight) {
-
-        // Calcular el monto a pagar (puedes agregar lógica adicional aquí)
-        double totalToPay = ((ChronoUnit.DAYS.between(startDate, endDate)) * pricePerNight);
-
-        // Construir el DTO de pago
-        PaymentDTO payment = PaymentDTO.builder()
-                .amount(totalToPay)
-                .build();
-        return payment;
+        double totalToPay = ChronoUnit.DAYS.between(startDate, endDate) * pricePerNight;
+        return PaymentDTO.builder().amount(totalToPay).build();
     }
 
     @Override
-    public ReservationResponse getById(UUID id) {
+    public ReservationDTO getById(UUID id) {
         if (id == null) {
             throw new BadRequestException("invalid id");
         }
         Reservation entity = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Reservation not found"));
-        return mapper.reservationToReservationResponse(entity);
+        return mapper.reservationToReservationDTO(entity);
     }
 
     @Override
-    public Collection<ReservationResponse> getAll() {
+    public Collection<ReservationDTO> getAll() {
         return repository.findAll().stream()
-                .map(mapper::reservationToReservationResponse)
+                .map(mapper::reservationToReservationDTO)
                 .collect(Collectors.toList());
     }
 
-    // @Override
-    // public ReservationDTO update(UUID id, ReservationDTO request) {
-    // if (id == null) {
-    // throw new BadRequestException("Invalid id");
-    // }
-    // Reservation existingEntity = repository.findById(id)
-    // .orElseThrow(() -> new NotFoundException("Reservation not found"));
+    @Override
+    public ReservationDTO updateStatus(UUID id, ReservationStatus status) {
+        if (id == null) {
+            throw new BadRequestException("Invalid id");
+        }
+        Reservation existingEntity = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Reservation not found"));
 
-    // // Actualization of fields
-
-    // // save the entity in database
-    // Reservation updatedReservation = repository.save(existingEntity);
-
-    // return mapper.reservationToReservationDTO(updatedReservation);
-    // }
+        existingEntity.setStatus(status);
+        Reservation updatedReservation = repository.save(existingEntity);
+        return mapper.reservationToReservationDTO(updatedReservation);
+    }
 
     @Override
     public void delete(UUID id) {
@@ -188,9 +179,5 @@ public class ReservationServiceImpl implements ReservationService {
         return entity;
     }
 
-    protected double calculateTotalPrice(double pricePerNight, LocalDate startDate, LocalDate endDate) {
-        long numberOfNights = ChronoUnit.DAYS.between(startDate, endDate);
-        return pricePerNight * numberOfNights;
-    }
 
 }

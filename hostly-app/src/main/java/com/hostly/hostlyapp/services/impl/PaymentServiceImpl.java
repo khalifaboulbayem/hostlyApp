@@ -14,10 +14,12 @@ import com.hostly.hostlyapp.handlers.exceptions.FieldInvalidException;
 import com.hostly.hostlyapp.models.Payment;
 import com.hostly.hostlyapp.models.Reservation;
 import com.hostly.hostlyapp.models.dto.PaymentDTO;
+import com.hostly.hostlyapp.models.dto.response.PaymentResponse;
 import com.hostly.hostlyapp.models.mappers.PaymentMapper;
 import com.hostly.hostlyapp.models.mappers.ReservationMapper;
 import com.hostly.hostlyapp.repositories.PaymentRepository;
 import com.hostly.hostlyapp.services.PaymentService;
+import com.hostly.hostlyapp.services.ReservationService;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -32,7 +34,7 @@ public class PaymentServiceImpl implements PaymentService {
     private ReservationMapper reservationMapper;
 
     @Autowired
-    private ReservationServiceImpl reservationService;
+    private ReservationService reservationService;
 
     @Override
     public Collection<PaymentDTO> getAll() {
@@ -59,8 +61,7 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentDTO makePayment(UUID reservationId, PaymentDTO entityDto) {
         // Calcular el precio total basado en el precio por noche y el número de noches
         Reservation reservation = reservationMapper
-                .reservationDTOtoReservation(reservationMapper
-                        .reservationResponseToReservationDTO(reservationService.getById(reservationId)));
+                .reservationDTOtoReservation(reservationService.getById(reservationId));
         return savePayement(entityDto, reservation);
     }
 
@@ -87,33 +88,35 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentDTO getToPay(UUID reservationId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
-        // if (reservationId == null) {
-        // throw new BadRequestException("Invalid reservation id");
-        // }
+        if (reservationId == null) {
+            throw new BadRequestException("Invalid reservation id");
+        }
 
-        // Reservation reservation = repository.findById(reservationId)
-        // .orElseThrow(() -> new NotFoundException("Reservation not found"));
+        Reservation reservation = reservationMapper
+                .reservationDTOtoReservation(reservationService.getById(reservationId));
+        // Verificar si la reserva ya tiene un pago asociado
+        if (reservation.getPayment() != null) {
+            throw new FieldAlreadyExistException(
+                    "Payment already exists for reservation with code: " +
+                            reservation.getConfirmationCode());
+        }
 
-        // // Verificar si la reserva ya tiene un pago asociado
-        // if (reservation.getPayment() != null) {
-        // throw new FieldAlreadyExistException(
-        // "Payment already exists for reservation with code: " +
-        // reservation.getConfirmationCode());
-        // }
+        // Calcular el monto a pagar (puedes agregar lógica adicional aquí)
+        double pricePerNight = reservation.getAccommodation().getPrice();
+        double totalToPay = calculateTotalPrice(pricePerNight,
+                reservation.getStartDate(), reservation.getEndDate());
 
-        // // Calcular el monto a pagar (puedes agregar lógica adicional aquí)
-        // double pricePerNight = reservation.getAccommodation().getPrice();
-        // double totalToPay = calculateTotalPrice(pricePerNight,
-        // reservation.getStartDate(), reservation.getEndDate());
+        // Construir el DTO de pago
+        PaymentDTO payment = PaymentDTO.builder()
+                .amount(totalToPay)
+                .
+                .build();
+        return payment;
+    }
 
-        // // Construir el DTO de pago
-        // PaymentDTO payment = PaymentDTO.builder()
-        // .amount(totalToPay)
-        // .reservationDTO(mapper.reservationToReservationDTO(reservation))
-        // .build();
-        // return payment;
+    private double calculateTotalPrice(double pricePerNight, LocalDate startDate, LocalDate endDate) {
+        long numberOfNights = ChronoUnit.DAYS.between(startDate, endDate);
+        return pricePerNight * numberOfNights;
     }
 
 }

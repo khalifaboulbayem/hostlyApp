@@ -16,5 +16,7 @@ public interface AccommodationMapper {
 
     AccommodationResponse accommodationToAccommodationResponse(Accommodation accommodation);
 
+    AccommodationResponse accommodationDTOtoAccommodationResponse(AccommodationDTO accommodation);
+
     AccommodationDTO accommodationResponseToAccommodationDTO(AccommodationResponse response);
 }

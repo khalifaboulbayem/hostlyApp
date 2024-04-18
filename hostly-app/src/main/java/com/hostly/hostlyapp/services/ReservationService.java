@@ -2,18 +2,19 @@ package com.hostly.hostlyapp.services;
 
 import java.util.*;
 
+import com.hostly.hostlyapp.enums.ReservationStatus;
 import com.hostly.hostlyapp.models.Reservation;
 import com.hostly.hostlyapp.models.dto.ReservationDTO;
 import com.hostly.hostlyapp.models.dto.response.ReservationResponse;
 
 public interface ReservationService {
-    Collection<ReservationResponse> getAll();
+    Collection<ReservationDTO> getAll();
 
-    ReservationResponse getById(UUID id);
+    ReservationDTO getById(UUID id);
 
-    /// ReservationDTO update(UUID id, ReservationDTO entityDto);
+    ReservationDTO updateStatus(UUID id, ReservationStatus status);
 
-    ReservationResponse create(ReservationDTO entityDto);
+    ReservationDTO create(ReservationDTO entityDto);
 
     void delete(UUID id);
 

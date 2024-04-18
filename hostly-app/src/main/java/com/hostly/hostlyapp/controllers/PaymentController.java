@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -27,12 +28,14 @@ public class PaymentController {
     private PaymentMapper mapper;
 
     @GetMapping("/payments")
-    public ResponseEntity<Collection<PaymentDTO>> getAllPayments() {
-        Collection<PaymentDTO> payments = paymentService.getAll();
+    public ResponseEntity<Collection<PaymentResponse>> getAllPayments() {
+        Collection<PaymentResponse> payments = paymentService.getAll().stream()
+        .map(mapper::paymentDtoToPaymentResponse)
+        .collect(Collectors.toList());;
         return new ResponseEntity<>(payments, HttpStatus.OK);
     }
 
-    @PostMapping("/payments/reservation/{reservationId}")
+    @PostMapping("/payment/reservation/{reservationId}")
     public ResponseEntity<PaymentResponse> makePaymentByReservationId(@PathVariable UUID reservationId,
             @RequestBody PaymentDTO paymentDTO) {
         PaymentDTO payment = paymentService.makePayment(reservationId, paymentDTO);
@@ -40,13 +43,13 @@ public class PaymentController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    // @GetMapping("/payments/reservation/{reservationId}")
-    // public ResponseEntity<PaymentResponse>
-    // getPaymentToPayByReservationId(@PathVariable UUID reservationId) {
-    // PaymentDTO payment = paymentService.getToPay(reservationId);
-    // PaymentResponse response = mapper.paymentDtoToPaymentResponse(payment);
-    // return new ResponseEntity<>(response, HttpStatus.OK);
-    // }
+    @GetMapping("/payment/reservation/{reservationId}")
+    public ResponseEntity<PaymentResponse>
+    getPaymentToPayByReservationId(@PathVariable UUID reservationId) {
+    PaymentDTO payment = paymentService.getToPay(reservationId);
+    PaymentResponse response = mapper.paymentDtoToPaymentResponse(payment);
+    return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     @PostMapping("/payments/confirmation/{confirmationCode}")
     public ResponseEntity<PaymentResponse> makePaymentByConfirmationCode(@PathVariable String confirmationCode,

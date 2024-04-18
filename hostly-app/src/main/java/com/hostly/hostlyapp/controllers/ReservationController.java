@@ -6,11 +6,14 @@ import org.springframework.web.bind.annotation.*;
 
 import com.hostly.hostlyapp.models.dto.ReservationDTO;
 import com.hostly.hostlyapp.models.dto.response.ReservationResponse;
+import com.hostly.hostlyapp.models.mappers.ReservationMapper;
 import com.hostly.hostlyapp.services.ReservationService;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -20,25 +23,32 @@ public class ReservationController {
     @Autowired
     private ReservationService service;
 
+    @Autowired
+    private ReservationMapper mapper;
+
     @GetMapping("/reservations")
-    public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok(service.getAll());
+    public ResponseEntity<Collection<ReservationResponse>> getAll() {
+        Collection<ReservationResponse> reservations = service.getAll().stream()
+                .map(mapper::reservationDTOtoReservationResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(reservations);
     }
 
     @GetMapping("/reservation/{id}")
-    public ResponseEntity<?> details(@PathVariable UUID id) {
-        return ResponseEntity.ok(service.getById(id));
+    public ResponseEntity<ReservationResponse> details(@PathVariable UUID id) {
+        return ResponseEntity.ok(mapper.reservationDTOtoReservationResponse(service.getById(id)));
 
     }
 
     @GetMapping("/reservation/{confirmationCode}")
-    public ResponseEntity<?> details(@PathVariable("confirmationCode") String id) {
-        return ResponseEntity.ok(service.getReservationByCodeConfirmation(id));
+    public ResponseEntity<ReservationResponse> details(@PathVariable("confirmationCode") String id) {
+        return ResponseEntity.ok(mapper.reservationToReservationResponse(service.getReservationByCodeConfirmation(id)));
+
     }
 
     @PostMapping("/reservation")
-    public ResponseEntity<?> create(@RequestBody ReservationDTO entity) {
-        ReservationResponse entityCreated = service.create(entity);
+    public ResponseEntity<ReservationResponse> create(@RequestBody ReservationDTO entity) {
+        ReservationResponse entityCreated = mapper.reservationDTOtoReservationResponse(service.create(entity));
         return ResponseEntity.ok(entityCreated);
     }
 

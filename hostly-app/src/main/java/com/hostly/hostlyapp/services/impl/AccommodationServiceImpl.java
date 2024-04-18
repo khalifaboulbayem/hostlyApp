@@ -36,34 +36,34 @@ public class AccommodationServiceImpl implements AccommodationService {
     private UserEntityMapper userMapper;
 
     @Override
-    public AccommodationResponse create(AccommodationDTO request) {
+    public AccommodationDTO create(AccommodationDTO request) {
         UserResponse userDto = userService.getById(request.getUserId());
         Accommodation entity = mapper.accommodationDTOtoAccommodation(request);
         UserEntity userEntity = userMapper.userResponsetoUserEntity(userDto);
         entity.setUser(userEntity);
         repository.save(entity);
-        return mapper.accommodationToAccommodationResponse(entity);
+        return mapper.accommodationToAccommodationDTO(entity);
     }
 
     @Override
-    public AccommodationResponse getById(UUID id) {
+    public AccommodationDTO getById(UUID id) {
         if (id == null) {
             throw new BadRequestException("invalid id");
         }
         Accommodation entity = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Accommodation not found"));
-        return mapper.accommodationToAccommodationResponse(entity);
+        return mapper.accommodationToAccommodationDTO(entity);
     }
 
     @Override
-    public Collection<AccommodationResponse> getAll() {
+    public Collection<AccommodationDTO> getAll() {
         return repository.findAll().stream()
-                .map(mapper::accommodationToAccommodationResponse)
+                .map(mapper::accommodationToAccommodationDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public AccommodationResponse update(UUID id, AccommodationDTO request) {
+    public AccommodationDTO update(UUID id, AccommodationDTO request) {
         if (id == null) {
             throw new BadRequestException("Invalid id");
         }
@@ -83,7 +83,7 @@ public class AccommodationServiceImpl implements AccommodationService {
 
         // aqui podemos returnar tanto un DTO o simplemente un entidad.
         // ya que no tenemos datos sincibles
-        return mapper.accommodationToAccommodationResponse(updatedAccommodation);
+        return mapper.accommodationToAccommodationDTO(updatedAccommodation);
     }
 
     @Override

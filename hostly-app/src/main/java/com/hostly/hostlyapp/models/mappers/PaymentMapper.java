@@ -14,5 +14,7 @@ public interface PaymentMapper {
 
     PaymentDTO paymentToPaymentDTO(Payment payment);
 
+    PaymentResponse paymentToPaymentResponse(Payment payment);
+
     PaymentResponse paymentDtoToPaymentResponse(PaymentDTO payment);
 }

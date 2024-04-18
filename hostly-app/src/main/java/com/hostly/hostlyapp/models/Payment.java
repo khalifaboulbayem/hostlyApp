@@ -25,11 +25,11 @@ public class Payment {
     @NotNull(message = "Amount is required")
     private double amount;
 
-    @NotNull(message = "Payment date is required")
     private LocalDate paymentDate;
 
     private PaymentMethod paymentMethod;
 
+    @NotNull(message = "Status is required")
     private PaymentStatus status;
 
     @OneToOne

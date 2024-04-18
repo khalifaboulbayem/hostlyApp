@@ -14,7 +14,6 @@ import com.hostly.hostlyapp.enums.PaymentStatus;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class PaymentDTO {
     private UUID id;
 
@@ -30,6 +29,6 @@ public class PaymentDTO {
 
     private PaymentStatus status;
 
-    private ReservationDTO reservationDTO;
+    private ReservationDTO reservation;
     // getters and setters
 }

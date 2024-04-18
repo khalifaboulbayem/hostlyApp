@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.hostly.hostlyapp.enums.ReservationStatus;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -22,5 +24,7 @@ public class ReservationResponse {
     private String confirmationCode;
 
     private PaymentResponse payment;
+
+    private ReservationStatus status;
     // getters and setters
 }

@@ -26,7 +26,7 @@ public class PaymentResponse {
 
     private PaymentStatus status;
 
-    private ReservationDTO reservationDTO;
+    private ReservationResponse reservation;
 
     // getters and setters
 }
