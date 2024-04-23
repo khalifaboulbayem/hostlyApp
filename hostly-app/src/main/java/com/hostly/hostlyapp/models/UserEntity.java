@@ -34,6 +34,7 @@ public class UserEntity /* implements UserDetails */ {
     @Column(unique = true)
     private String username;
 
+    @Column(unique = true)
     @Email(message = "Email must be valid")
     @NotBlank(message = "Email is required")
     @Size(max = 60, message = "Size must be less than or equal to 60 caracters")

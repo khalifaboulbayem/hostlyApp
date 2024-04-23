@@ -67,7 +67,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     private PaymentDTO savePayement(PaymentDTO entityDto, Reservation reservation) {
 
-        double totalPrice = reservationService.calculateTotalPrice(reservation.getAccommodation().getPrice(),
+        double totalPrice = calculateTotalPrice(reservation.getAccommodation().getPrice(),
                 reservation.getStartDate(),
                 reservation.getEndDate());
 
@@ -109,7 +109,7 @@ public class PaymentServiceImpl implements PaymentService {
         // Construir el DTO de pago
         PaymentDTO payment = PaymentDTO.builder()
                 .amount(totalToPay)
-                .
+               // .
                 .build();
         return payment;
     }

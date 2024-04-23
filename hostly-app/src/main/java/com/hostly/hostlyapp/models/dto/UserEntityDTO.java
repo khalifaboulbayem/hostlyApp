@@ -5,7 +5,6 @@ import lombok.*;
 import java.util.*;
 
 import com.hostly.hostlyapp.enums.Role;
-import com.hostly.hostlyapp.models.dto.AccommodationDTO;
 import com.hostly.hostlyapp.models.dto.response.AccommodationResponse;
 import com.hostly.hostlyapp.models.dto.response.ReservationResponse;
 
